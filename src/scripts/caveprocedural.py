@@ -44,8 +44,13 @@ class CaveProcedural:
 
 
 if __name__ == '__main__':
-    buckets = 3
-    noise = CaveProcedural((10, 10))
+    size = int(input())
+    noise = CaveProcedural(Layout((size, size)))
 
-    for i in range(21):
-        print(noise._roundoff(i/10))
+    while True:
+        noise.smoothing()
+        for l in noise.layout.grid:
+            lc = ["#" if i else " " for i in l]
+            print(lc)
+
+        input()

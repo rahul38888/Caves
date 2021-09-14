@@ -1,8 +1,6 @@
 import itertools
 import random
 
-from scripts.pathfinder import PathFinder
-
 
 class Layout:
     def __init__(self, dimensions: tuple, grid: list = None):
@@ -11,10 +9,7 @@ class Layout:
         self.height: int = dimensions[1]
 
         self.target = None
-        self.source = None
-        self.pathfider = PathFinder(self)
-
-        self.followers = []
+        self.sources = set()
 
         if grid:
             self.grid = grid
@@ -33,14 +28,19 @@ class Layout:
         x, y = 0, 0
         while self.grid[y][x]:
             x, y = random.randint(0,self.width-1), random.randint(0,self.height-1)
-            if (x,y) == self.target or (x,y) in self.source:
+            if (x,y) == self.target or (x,y) in self.sources:
                 x,y =0,0
 
         return x,y
 
-    def update_target(self):
-        self.target = self._random_position()
-        self.pathfider.update_target(self.target)
+    def is_target(self, cell: tuple):
+        return cell == self.target
 
-    def add_follower(self):
-        self.followers.append(self._random_position())
+    def is_source(self, cell: tuple):
+        return self.sources.__contains__(cell)
+
+    def new_target(self, target: tuple = None):
+        self.target = target if target else self._random_position()
+
+    def add_follower(self, source: tuple = None):
+        self.sources.add(source if source else self._random_position())

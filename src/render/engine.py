@@ -32,6 +32,6 @@ class RenderEngine:
             if self.update:
                 self.update()
             if self.render:
-                self.render()
+                self.render(self.display)
 
         pygame.quit()
