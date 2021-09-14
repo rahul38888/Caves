@@ -8,12 +8,21 @@ from scripts.pathfinder import PathFinder
 
 sq_width = 10
 size = (80, 40)
-itertions = 10
+itertions = 50
 fps_cap = 10
 layout = Layout(size)
 pf = PathFinder()
 
 state = dict()
+
+def update_source(pathfinderapp: PathFindingApp):
+    pathfinderapp.layout.sources.clear()
+    pathfinderapp.add_follower()
+
+    state["source"] = pathfinderapp.layout.sources.pop()
+    pathfinderapp.layout.add_follower(source=state["source"])
+
+    state["path"] = pathfinderapp.get_path(source=state["source"])
 
 def init():
     cave = CaveProcedural(layout=layout)
@@ -21,26 +30,21 @@ def init():
 
     pathfinderapp = PathFindingApp(layout=cave.layout, pathfinder=pf)
     pathfinderapp.new_target()
-    pathfinderapp.add_follower()
 
-    source = pathfinderapp.layout.sources.pop()
-    state["path"] = pathfinderapp.get_path(source=source)
-    pathfinderapp.layout.add_follower(source=source)
+    update_source(pathfinderapp)
 
-    def keymap():
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-                pathfinderapp.new_target()
-                state["path"] = pathfinderapp.get_path(pathfinderapp.layout.sources)
+    def keymap(event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+            pathfinderapp.new_target()
+            state["path"] = pathfinderapp.get_path(source=state["source"])
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                pass
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            update_source(pathfinderapp)
 
     def update():
         pass
 
     def render(display):
-
         for y in range(cave.height):
             for x in range(cave.width):
                 color_val = (not pathfinderapp.layout.grid[y][x]) * 255
@@ -60,11 +64,11 @@ def init():
 
     re = RenderEngine([size[0]*sq_width, size[1]*sq_width], update, render, keymap, fps_cap)
 
-    return re, cave, pathfinderapp
+    return re
 
 
 if __name__ == '__main__':
-    re, cave, pathfinder = init()
+    re = init()
 
     re.start()
 

@@ -28,6 +28,9 @@ class PathFindingApp:
             path.append(cur)
             if cur == self.layout.target:
                 break
+            if not cur:
+                return []
+
             cur = self.pathfinder.prev[cur[1]][cur[0]]
 
         return path
