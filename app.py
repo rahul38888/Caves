@@ -27,6 +27,7 @@ def update_source(pathfinderapp: PathFindingApp):
 def init():
     cave = CaveProcedural(layout=layout)
     cave.smoothing(iterations=itertions)
+    cave.detectRooms()
 
     pathfinderapp = PathFindingApp(layout=cave.layout, pathfinder=pf)
     pathfinderapp.new_target()

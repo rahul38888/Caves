@@ -13,5 +13,5 @@ class Room:
         for tile in self.tiles:
             x, y = tile
             for i, j in itertools.product(range(-1, 2), range(-1, 2)):
-                if (i == 0 or j == 0) and not layout[y+j][x + i]:
+                if (i == 0 or j == 0) and not layout.grid[y+j][x + i]:
                     self.border.add((x + i, y + j))

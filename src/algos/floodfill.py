@@ -18,8 +18,9 @@ def flood_fill(arr: list, x_cord, y_cord, visited: list = None) -> set:
         for i, j in itertools.product(range(-1, 2), range(-1, 2)):
             if 0 <= x + i < len(arr[0]) and 0 <= y + j < len(arr):
                 if (i != 0 or j != 0) and arr[y + j][x + i] == matching_val and not visited[y + j][x + i]:
-                    result.add((x + i, y + j))
-                    q.put((x + i, y + j))
+                    if not result.__contains__((x + i, y + j)):
+                        result.add((x + i, y + j))
+                        q.put((x + i, y + j))
     return result
 
 

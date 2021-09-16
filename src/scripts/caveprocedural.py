@@ -45,28 +45,28 @@ class CaveProcedural:
         for i in range(iterations):
             self._single_smoothing()
 
-    def calculateRooms(self):
+    def detectRooms(self):
         visited = [[False for x in range(self.width)] for y in range(self.height)]
 
         for x in range(self.width):
             for y in range(self.height):
-                if not visited[y][x] and not self.layout[y][x]:
+                if not visited[y][x] and not self.layout.grid[y][x]:
                     tiles = flood_fill(self.layout.grid, x, y, visited=visited)
                     room = Room(tiles=tiles)
                     room.calculate_borders(layout=self.layout)
                     self.layout.rooms.append(room)
+                else:
+                    visited[y][x] = True
 
         self.layout.rooms.sort(key=lambda r:r.size, reverse=True)
-
+        print(len(self.layout.rooms))
 
 if __name__ == '__main__':
     size = int(input())
     noise = CaveProcedural(Layout((size, size)))
 
-    while True:
-        noise.smoothing()
-        for l in noise.layout.grid:
-            lc = ["#" if i else " " for i in l]
-            print(lc)
+    noise.smoothing(iterations=10)
+    for a in noise.layout.grid:
+        print(list(map(lambda x: "#" if x else " ",a)))
 
-        input()
+    noise.detectRooms()
