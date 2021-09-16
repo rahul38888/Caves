@@ -1,7 +1,7 @@
 
 
 from datahandler.layout import Layout
-from scripts.pathfinder import PathFinder
+from scripts.algos.pathfinder import PathFinder
 
 
 class PathFindingApp:

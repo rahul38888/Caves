@@ -2,8 +2,8 @@ from random import random
 import itertools
 
 from datahandler.layout import Layout
-from algos.floodfill import flood_fill
 from datahandler.room import Room
+from scripts.algos.floodfill import flood_fill
 
 
 class CaveProcedural:
