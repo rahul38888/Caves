@@ -2,6 +2,9 @@ from random import random
 import itertools
 
 from datahandler.layout import Layout
+from algos.floodfill import flood_fill
+from datahandler.room import Room
+
 
 class CaveProcedural:
     def __init__(self, layout: Layout):
@@ -41,6 +44,19 @@ class CaveProcedural:
     def smoothing(self, iterations: int = 1):
         for i in range(iterations):
             self._single_smoothing()
+
+    def calculateRooms(self):
+        visited = [[False for x in range(self.width)] for y in range(self.height)]
+
+        for x in range(self.width):
+            for y in range(self.height):
+                if not visited[y][x] and not self.layout[y][x]:
+                    tiles = flood_fill(self.layout.grid, x, y, visited=visited)
+                    room = Room(tiles=tiles)
+                    room.calculate_borders(layout=self.layout)
+                    self.layout.rooms.append(room)
+
+        self.layout.rooms.sort(key=lambda r:r.size, reverse=True)
 
 
 if __name__ == '__main__':

@@ -8,6 +8,8 @@ class Layout:
         self.width: int = dimensions[0]
         self.height: int = dimensions[1]
 
+        self.rooms = list()
+
         self.target = None
         self.sources = set()
 

@@ -69,6 +69,5 @@ def init():
 
 if __name__ == '__main__':
     re = init()
-
     re.start()
 
