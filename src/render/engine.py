@@ -6,7 +6,7 @@ class RenderEngine:
         self.dimensions = dimensions
 
         pygame.init()
-        self.display = pygame.display.set_mode(dimensions)
+        self.display = pygame.display.set_mode(dimensions, pygame.RESIZABLE)
         pygame.display.set_caption("Caves")
 
         self.keymap = keymap

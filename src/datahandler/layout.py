@@ -44,5 +44,5 @@ class Layout:
     def new_target(self, target: tuple = None):
         self.target = target if target else self._random_position()
 
-    def add_follower(self, source: tuple = None):
+    def add_source(self, source: tuple = None):
         self.sources.add(source if source else self._random_position())

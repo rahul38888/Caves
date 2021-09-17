@@ -1,6 +1,7 @@
 import pygame
 
 from datahandler.layout import Layout
+from render.renderdatagenerator import coordinate_data
 from scripts.pathfindingapp import PathFindingApp
 from scripts.algos.pathfinder import PathFinder
 from scripts.algos.caveprocedural import CaveProcedural
@@ -9,9 +10,10 @@ from render.engine import RenderEngine
 
 class App:
     def __init__(self):
-        self.sq_width = 10
+        self.sq_width = 15
         self.size = (80, 40)
-        self.itertions = 50
+        self.screen_size = (self.size[0]*self.sq_width, self.size[1]*self.sq_width)
+        self.itertions = 20
         self.fps_cap = 10
 
         self.state = dict()
@@ -30,7 +32,7 @@ class App:
         self.pathfinderapp.add_follower()
 
         self.state["source"] = self.pathfinderapp.layout.sources.pop()
-        self.pathfinderapp.layout.add_follower(source=self.state["source"])
+        self.pathfinderapp.layout.add_source(source=self.state["source"])
 
         self.state["path"] = self.pathfinderapp.get_path(source=self.state["source"])
 
@@ -53,20 +55,26 @@ class App:
 
     def renderHandler(self):
         def render(display):
-            for y in range(self.cave.height):
-                for x in range(self.cave.width):
-                    color_val = (not self.pathfinderapp.layout.grid[y][x]) * 255
+            triangles = coordinate_data(self.cave.layout.grid, self.sq_width)
+            display.fill((255, 255, 255))
 
-                    color = (color_val, color_val, color_val)
-                    if self.pathfinderapp.layout.is_target((x, y)):
-                        color = (0, 255, 0)
-                    elif self.pathfinderapp.layout.is_source((x, y)):
-                        color = (255, 0, 0)
-                    elif self.state["path"] and self.state["path"].__contains__((x, y)):
-                        color = (0, 0, 255)
+            if len(self.state["path"]):
+                color = (0, 0, 255)
+                points = list(map(lambda c: ((c[0] + 0.5) * self.sq_width, (c[1] + 0.5) * self.sq_width),self.state["path"]))
+                pygame.draw.lines(display, color, False, points, width=2)
+            if self.pathfinderapp.layout.target:
+                color = (0, 255, 0)
+                x, y = self.pathfinderapp.layout.target
+                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+            if self.state["source"]:
+                color = (255, 0, 0)
+                x, y = self.state["source"]
+                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
-                    rect = [x * self.sq_width, y * self.sq_width, self.sq_width, self.sq_width]
-                    pygame.draw.rect(display, color, rect)
+
+            for tri in triangles:
+                pygame.draw.polygon(display, [0, 0, 0], list(tri), width=0)
+                # pygame.draw.lines(display, [0, 0, 0], True, list(tri), blend=1)
 
             pygame.display.flip()
 
@@ -75,8 +83,8 @@ class App:
     def init(self):
         self.update_source()
 
-        self.renderEngine = RenderEngine([self.size[0] * self.sq_width, self.size[1] * self.sq_width],
-                                         self.updateHandler(), self.renderHandler(), self.keymapHandler(), self.fps_cap)
+        self.renderEngine = RenderEngine(list((1200, 600)), self.updateHandler(),
+                                         self.renderHandler(), self.keymapHandler(), self.fps_cap)
 
         return self.renderEngine
 

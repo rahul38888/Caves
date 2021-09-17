@@ -19,7 +19,7 @@ class PathFindingApp:
         self.recalculate()
 
     def add_follower(self, source: tuple = None):
-        self.layout.add_follower(source)
+        self.layout.add_source(source)
 
     def get_path(self, source: tuple) -> list:
         path = []
