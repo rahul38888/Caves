@@ -10,10 +10,10 @@ from render.engine import RenderEngine
 
 class App:
     def __init__(self):
-        self.sq_width = 15
-        self.size = (80, 40)
+        self.sq_width = 13
+        self.size = (100, 50)
         self.screen_size = (self.size[0]*self.sq_width, self.size[1]*self.sq_width)
-        self.itertions = 20
+        self.itertions = 5
         self.fps_cap = 10
 
         self.state = dict()
@@ -21,6 +21,8 @@ class App:
         self.cave = CaveProcedural(layout=Layout(self.size))
         self.cave.smoothing(iterations=self.itertions)
         self.cave.detectRooms()
+
+        self.connectors = self.cave.connect_rooms()
 
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
         self.pathfinderapp.new_target()
@@ -44,6 +46,9 @@ class App:
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                 self.update_source()
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                pass
 
         return keymap
 
@@ -71,10 +76,13 @@ class App:
                 x, y = self.state["source"]
                 pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
-
             for tri in triangles:
                 pygame.draw.polygon(display, [0, 0, 0], list(tri), width=0)
                 # pygame.draw.lines(display, [0, 0, 0], True, list(tri), blend=1)
+
+            for connector in self.connectors:
+                connector = [((c[0]+0.5) * self.sq_width, (c[1]+0.5) * self.sq_width) for c in connector]
+                pygame.draw.lines(display, (255, 0, 0), False, connector)
 
             pygame.display.flip()
 

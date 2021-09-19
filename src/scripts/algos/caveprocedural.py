@@ -1,9 +1,11 @@
+import math
 from random import random
 import itertools
 
 from datahandler.layout import Layout
 from datahandler.room import Room
 from scripts.algos.floodfill import flood_fill
+from scripts.algos.line import getLinePixels, drawLine
 
 
 class CaveProcedural:
@@ -12,6 +14,9 @@ class CaveProcedural:
         self.height: int = layout.height
 
         self.layout = layout
+
+        self.room_size_threshold = 10
+        self.connection_radius = 1.1
 
         # 1: wall, 0: open
         for x in range(self.width):
@@ -52,6 +57,11 @@ class CaveProcedural:
             for y in range(self.height):
                 if not visited[y][x] and not self.layout.grid[y][x]:
                     tiles = flood_fill(self.layout.grid, x, y, visited=visited)
+                    if len(tiles) < self.room_size_threshold:
+                        for tile in tiles:
+                            self.layout.grid[tile[1]][tile[0]] = 1
+                        continue
+
                     room = Room(tiles=tiles)
                     room.calculate_borders(layout=self.layout)
                     self.layout.rooms.append(room)
@@ -59,7 +69,23 @@ class CaveProcedural:
                     visited[y][x] = True
 
         self.layout.rooms.sort(key=lambda r:r.size, reverse=True)
-        print(len(self.layout.rooms))
+
+    def _create_gallary(self, a, b):
+        dx = abs(a[0] - b[0])
+        dy = abs(a[1] - b[1])
+        
+
+    def connect_rooms(self) -> list:
+        connectors = []
+        for room_A in self.layout.rooms:
+            nearest_room, cordA, cordB = room_A.nearestRoom(self.layout.rooms)
+            Room.connect(room_A, nearest_room)
+            self._create_gallary(cordA, cordB)
+            connectors.append([cordA, cordB])
+            pixels = getLinePixels(cordA, cordB)
+            drawLine(self.layout.grid, pixels, radius=self.connection_radius)
+
+        return connectors
 
 if __name__ == '__main__':
     size = int(input())
