@@ -16,7 +16,7 @@ class CaveProcedural:
         self.layout = layout
 
         self.room_size_threshold = 10
-        self.connection_radius = 1.1
+        self.connection_radius = 2
 
         # 1: wall, 0: open
         for x in range(self.width):

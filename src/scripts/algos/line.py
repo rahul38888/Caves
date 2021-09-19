@@ -43,7 +43,7 @@ def drawLine(grid: list, line_pixels: list, radius: int):
         for y in range(pixel[1] - math.ceil(radius), pixel[1] + math.ceil(radius) + 1):
             for x in range(pixel[0] - math.ceil(radius), pixel[0] + math.ceil(radius) + 1):
                 if 0 <= x < len(grid[0]) and 0 <= y < len(grid):
-                    if math.pow(pixel[0] - x, 2) + math.pow(pixel[1] - y, 2) < math.pow(radius, 2):
+                    if math.pow(pixel[0] - x, 2) + math.pow(pixel[1] - y, 2) <= math.pow(radius, 2):
                         grid[y][x] = 0
 
 

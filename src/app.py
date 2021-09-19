@@ -10,8 +10,8 @@ from render.engine import RenderEngine
 
 class App:
     def __init__(self):
-        self.sq_width = 13
-        self.size = (100, 50)
+        self.sq_width = 15
+        self.size = (80, 40)
         self.screen_size = (self.size[0]*self.sq_width, self.size[1]*self.sq_width)
         self.itertions = 5
         self.fps_cap = 10
@@ -80,9 +80,9 @@ class App:
                 pygame.draw.polygon(display, [0, 0, 0], list(tri), width=0)
                 # pygame.draw.lines(display, [0, 0, 0], True, list(tri), blend=1)
 
-            for connector in self.connectors:
-                connector = [((c[0]+0.5) * self.sq_width, (c[1]+0.5) * self.sq_width) for c in connector]
-                pygame.draw.lines(display, (255, 0, 0), False, connector)
+            # for connector in self.connectors:
+            #     connector = [((c[0]+0.5) * self.sq_width, (c[1]+0.5) * self.sq_width) for c in connector]
+            #     pygame.draw.lines(display, (255, 0, 0), False, connector)
 
             pygame.display.flip()
 
