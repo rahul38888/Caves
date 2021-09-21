@@ -1,5 +1,8 @@
 # Game and Algo
-Procedural cave generation and shortest path using Dijkstra's Algorithm
+* Procedural cave generation 
+* Dijkstra's Algorithm tO detect the shortest path 
+* Flood fill algorithm to detect regions (rooms)
+* Line algorithm me connect isolated regions
 
 ## Snapshot
 ![welcome.png](https://github.com/rahul38888/game-n-algo/blob/main/media/Cave.png?raw=true)
