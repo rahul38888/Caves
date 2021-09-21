@@ -1,4 +1,5 @@
-# Game and Algo
+# Caves
+#### Using [pygame](https://www.pygame.org) as render engine
 * Procedural cave generation 
 * Dijkstra's Algorithm tO detect the shortest path 
 * Flood fill algorithm to detect regions (rooms)
@@ -14,6 +15,7 @@ Key | Function
 ------------ | -------------
 S | New random position for Red (source)
 T | New random position for Green (target)
+SPACE | Toggle pathfinding render
 Esc | Exist
 
 ### Enjoy!

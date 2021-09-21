@@ -35,6 +35,7 @@ class App:
 
         self.cave.connectRooms()
 
+        self.pathfinder_toggle = True
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
         self.pathfinderapp.new_target()
 
@@ -51,12 +52,16 @@ class App:
 
     def keymapHandler(self):
         def keymap(event):
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-                self.pathfinderapp.new_target()
-                self.state["path"] = self.pathfinderapp.get_path(source=self.state["source"])
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.pathfinder_toggle = not self.pathfinder_toggle
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                self.update_source()
+            if self.pathfinder_toggle:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+                    self.pathfinderapp.new_target()
+                    self.state["path"] = self.pathfinderapp.get_path(source=self.state["source"])
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                    self.update_source()
 
         return keymap
 
@@ -79,18 +84,19 @@ class App:
             pygame.draw.rect(display, tuple(map(lambda x: (x-20)%255,self.wall_color)),
                              [0, (self.size[1])*self.sq_width,self.screen_size[0], 200])
 
-            if len(self.state["path"]):
-                color = (0, 0, 255)
-                points = list(map(lambda c: ((c[0] + 0.5) * self.sq_width, (c[1] + 0.5) * self.sq_width),self.state["path"]))
-                pygame.draw.lines(display, color, False, points, width=2)
-            if self.pathfinderapp.layout.target:
-                color = (0, 255, 0)
-                x, y = self.pathfinderapp.layout.target
-                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
-            if self.state["source"]:
-                color = (255, 0, 0)
-                x, y = self.state["source"]
-                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+            if self.pathfinder_toggle:
+                if len(self.state["path"]):
+                    color = (0, 0, 255)
+                    points = list(map(lambda c: ((c[0] + 0.5) * self.sq_width, (c[1] + 0.5) * self.sq_width),self.state["path"]))
+                    pygame.draw.lines(display, color, False, points, width=2)
+                if self.pathfinderapp.layout.target:
+                    color = (0, 255, 0)
+                    x, y = self.pathfinderapp.layout.target
+                    pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+                if self.state["source"]:
+                    color = (255, 0, 0)
+                    x, y = self.state["source"]
+                    pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
             for i in range(len(triangles)):
                 tri = triangles[i]
@@ -98,9 +104,10 @@ class App:
                 pygame.draw.polygon(display, self.wall_color, list(tri), width=0)
 
             text = "World size: " + str(self.size)
-            text += "  Path length: " + str(len(self.state["path"]))
-            text += "  Taget position: " + str(self.pathfinderapp.layout.target)
-            text += "  Source Position: " + str(self.state["source"])
+            if self.pathfinder_toggle:
+                text += "  Path length: " + str(len(self.state["path"]))
+                text += "  Taget position: " + str(self.pathfinderapp.layout.target)
+                text += "  Source Position: " + str(self.state["source"])
             self._rendertext(display, text, (20,(self.size[1]+2)*self.sq_width))
 
             pygame.display.flip()
