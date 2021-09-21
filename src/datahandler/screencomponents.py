@@ -1,6 +1,7 @@
 from enum import Enum
 
 
+# Pre-defined points around the render coordinate
 class Points(Enum):
     A = (-0.5, -0.5)
     B = (0, -0.5)
@@ -12,6 +13,7 @@ class Points(Enum):
     H = (-0.5, 0)
 
 
+# triangles list mapped to each type of render points
 coordinate_map = {
     # 0
     (0, 0, 0, 0): [],

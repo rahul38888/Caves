@@ -8,6 +8,10 @@ from scripts.algos.floodfill import flood_fill
 from scripts.algos.line import getLinePixels, drawLine
 
 
+# Utiltity to generate canvas. Allowed method's order
+#   smoothing
+#   detecting rooms
+#   connected the rooms
 class CaveProcedural:
     def __init__(self, layout: Layout):
         self.width: int = layout.width
@@ -50,10 +54,6 @@ class CaveProcedural:
     def smoothing(self, iterations: int = 1):
         for i in range(iterations):
             self._single_smoothing()
-
-    def sanize_walls(self):
-        visited = [[False for x in range(self.width)] for y in range(self.height)]
-
 
     def detectRooms(self):
         visited = [[False for x in range(self.width)] for y in range(self.height)]
@@ -168,6 +168,3 @@ if __name__ == '__main__':
 
     noise.detectRooms()
     noise.connectRooms()
-
-# '   '
-# '+++'

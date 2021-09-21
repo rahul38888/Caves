@@ -1,12 +1,13 @@
 import pygame
 
 
+# Generalized render engine wrapper
 class RenderEngine:
     def __init__(self, dimensions: list, update, render, keymap, frame_rate: int = 10):
         self.dimensions = dimensions
 
         pygame.init()
-        self.display = pygame.display.set_mode((0,0), pygame.NOFRAME)
+        self.display = pygame.display.set_mode((0, 0), pygame.NOFRAME)
         pygame.display.set_caption("Caves")
         pygame.display.toggle_fullscreen()
 

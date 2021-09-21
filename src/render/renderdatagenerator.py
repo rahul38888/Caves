@@ -4,6 +4,7 @@ import random
 from datahandler.screencomponents import coordinate_map
 
 
+# Generated render triangle data using render points derived from layout grid data
 def render_data(grid: list, sq_width: float) -> tuple:
     grid_w = len(grid[0])
     grid_h = len(grid)
@@ -22,6 +23,7 @@ def render_data(grid: list, sq_width: float) -> tuple:
     return triangles, tags
 
 
+# get triangles fo one render points using activations around that
 def _get_triangles(index: tuple, cord_activations: tuple, sq_width: float) -> tuple:
     triangles = []
     tags = []

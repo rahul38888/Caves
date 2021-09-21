@@ -2,6 +2,12 @@ import itertools
 import random
 
 
+# Definition type to keep information of layout
+#   tiles
+#   Rooms
+#   target
+#   sources
+
 class Layout:
     def __init__(self, dimensions: tuple, grid: list = None):
         # 0: empty, -1: obstacle, 1: target, 2: start

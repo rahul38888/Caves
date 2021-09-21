@@ -2,6 +2,7 @@ import queue
 import itertools
 
 
+# Flood fill algorithm, returns tiles of same color
 def flood_fill(arr: list, x_cord, y_cord, visited: list = None) -> set:
     if visited is None:
         visited = [[False for x in y] for y in arr]

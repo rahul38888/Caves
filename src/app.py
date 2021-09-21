@@ -10,6 +10,7 @@ from scripts.algos.caveprocedural import CaveProcedural
 from render.engine import RenderEngine
 
 
+# Actual application to initialize pygame, RenderEngine, do canvas generation and pathfinding
 class App:
     def __init__(self, size=(80,40), sq_width=15, iterations=5):
         self.sq_width = sq_width
@@ -57,14 +58,6 @@ class App:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                 self.update_source()
 
-            # if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            #     self.cave = CaveProcedural(layout=Layout(self.size))
-            #     self.cave.smoothing(iterations=self.iterations)
-            #     self.cave.detectRooms()
-            #
-            #     self.cave.connectRooms()
-            #     self.renderEngine = self.init()
-
         return keymap
 
     def updateHandler(self):
@@ -99,22 +92,10 @@ class App:
                 x, y = self.state["source"]
                 pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
-            # for room in self.cave.layout.rooms:
-            #     for tile in room.tiles:
-            #         x, y = tile
-            #         rect = [x*self.sq_width, y*self.sq_width, self.sq_width, self.sq_width]
-            #         pygame.draw.rect(display, room.color, rect=rect)
-
             for i in range(len(triangles)):
                 tri = triangles[i]
                 tag = tags[i]
                 pygame.draw.polygon(display, self.wall_color, list(tri), width=0)
-                # pygame.draw.lines(display, [0, 0, 0], True, list(tri), blend=1)
-
-            # for connector in self.connectors:
-            #     connector = [((c[0]+0.5) * self.sq_width, (c[1]+0.5) * self.sq_width) for c in connector]
-            #     pygame.draw.lines(display, (255, 0, 0), False, connector)
-
 
             text = "World size: " + str(self.size)
             text += "  Path length: " + str(len(self.state["path"]))

@@ -1,6 +1,7 @@
 import math
 
 
+# Algorithm to return tiles which makes the line connecting a and b
 def getLinePixels(a: tuple, b: tuple) -> list:
     inverted = False
     dx = b[0] - a[0]
@@ -38,6 +39,7 @@ def getLinePixels(a: tuple, b: tuple) -> list:
     return pixels
 
 
+# for a list of pixels draw lines on certain radius(thickness)
 def drawLine(grid: list, line_pixels: list, radius: int):
     for pixel in line_pixels:
         for y in range(pixel[1] - math.ceil(radius), pixel[1] + math.ceil(radius) + 1):

@@ -4,6 +4,7 @@ from datahandler.layout import Layout
 from scripts.algos.pathfinder import PathFinder
 
 
+# Pathfinder application uril to handle layout and pathfinder util
 class PathFindingApp:
     def __init__(self, layout: Layout, pathfinder: PathFinder):
         self.layout = layout
