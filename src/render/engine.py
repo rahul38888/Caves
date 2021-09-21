@@ -6,9 +6,9 @@ class RenderEngine:
         self.dimensions = dimensions
 
         pygame.init()
-        self.display = pygame.display.set_mode(dimensions, pygame.RESIZABLE)
-        self.display = pygame.display.set_mode(pygame.FULLSCREEN)
+        self.display = pygame.display.set_mode((0,0), pygame.NOFRAME)
         pygame.display.set_caption("Caves")
+        pygame.display.toggle_fullscreen()
 
         self.keymap = keymap
         self.render = render

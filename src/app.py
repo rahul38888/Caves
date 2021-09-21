@@ -18,7 +18,7 @@ class App:
         self.iterations = iterations
         self.fps_cap = 10
 
-        self.wall_color = [105, 77, 52]
+        self.wall_color = [95, 67, 42]
         self.wall_border_color = [71, 54, 39]
         self.room_color = [211, 255, 204]
 
@@ -57,13 +57,13 @@ class App:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                 self.update_source()
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.cave = CaveProcedural(layout=Layout(self.size))
-                self.cave.smoothing(iterations=self.iterations)
-                self.cave.detectRooms()
-
-                self.cave.connectRooms()
-                self.renderEngine = self.init()
+            # if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            #     self.cave = CaveProcedural(layout=Layout(self.size))
+            #     self.cave.smoothing(iterations=self.iterations)
+            #     self.cave.detectRooms()
+            #
+            #     self.cave.connectRooms()
+            #     self.renderEngine = self.init()
 
         return keymap
 
@@ -83,6 +83,8 @@ class App:
             triangles, tags = render_data(self.cave.layout.grid, self.sq_width)
             # display.fill(self.room_color)
             pygame.draw.rect(display, self.room_color, rect=[0,0,self.screen_size[0], self.screen_size[1]])
+            pygame.draw.rect(display, tuple(map(lambda x: (x-20)%255,self.wall_color)),
+                             [0, (self.size[1])*self.sq_width,self.screen_size[0], 200])
 
             if len(self.state["path"]):
                 color = (0, 0, 255)
@@ -118,7 +120,7 @@ class App:
             text += "  Path length: " + str(len(self.state["path"]))
             text += "  Taget position: " + str(self.pathfinderapp.layout.target)
             text += "  Source Position: " + str(self.state["source"])
-            self._rendertext(display, text, (20,(self.size[1]+1)*self.sq_width))
+            self._rendertext(display, text, (20,(self.size[1]+2)*self.sq_width))
 
             pygame.display.flip()
 
