@@ -10,24 +10,31 @@ class PathFindingApp:
         self.layout = layout
         self.pathfinder = pathfinder
 
-    def recalculate(self):
-        if self.layout.target is None:
+    def recalculate(self, target: tuple):
+        if target is None:
             return
-        self.pathfinder.recalculate(self.layout.target[0], self.layout.target[1], self.layout)
 
-    def new_target(self, target: tuple = None):
-        self.layout.new_target(target=target)
-        self.recalculate()
+        self.pathfinder.recalculate(target[0], target[1], self.layout)
 
-    def add_follower(self, source: tuple = None):
-        self.layout.add_source(source)
+    def move_target(self, position: tuple = None):
+        target = self.layout.move_target(position=position)
+        if target:
+            self.recalculate(target)
 
-    def get_path(self, source: tuple) -> list:
+        return target
+
+    def new_follower(self, ignore: list = []):
+        return self.layout.new_source(ignore=ignore)
+
+    def get_next_step(self, position: tuple) -> tuple:
+        return self.pathfinder.prev[position[1]][position[0]]
+
+    def get_path(self, target: tuple, source: tuple) -> list:
         path = []
         cur = source
         while True:
             path.append(cur)
-            if cur == self.layout.target:
+            if cur == target:
                 break
             if not cur:
                 return []
@@ -46,6 +53,6 @@ if __name__ == '__main__':
 
     target = (a-2, a - 1)
     source = (0, 0)
-    p_app.new_target(target=target)
+    p_app.move_target(position=target)
 
-    print(p_app.get_path(source=source))
+    print(p_app.get_path(source=source, target=target))

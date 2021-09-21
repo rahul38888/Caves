@@ -27,47 +27,53 @@ class App:
         self.font_size = 30
         self.font_color = (255, 255, 255)
 
-        self.state = dict()
-
         self.cave = CaveProcedural(layout=Layout(self.size))
         self.cave.smoothing(iterations=self.iterations)
         self.cave.detectRooms()
-
         self.cave.connectRooms()
 
-        self.pathfinder_toggle = True
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
-        self.pathfinderapp.new_target()
+
+        self.player = self.pathfinderapp.move_target()
+        self.enemies = []
+        self.enemies.append(self.pathfinderapp.new_follower(ignore=[self.player]))
+        self.enemies.append(self.pathfinderapp.new_follower(ignore=[self.player]+self.enemies))
 
         self.renderEngine = self.init()
-
-    def update_source(self):
-        self.pathfinderapp.layout.sources.clear()
-        self.pathfinderapp.add_follower()
-
-        self.state["source"] = self.pathfinderapp.layout.sources.pop()
-        self.pathfinderapp.layout.add_source(source=self.state["source"])
-
-        self.state["path"] = self.pathfinderapp.get_path(source=self.state["source"])
 
     def keymapHandler(self):
         def keymap(event):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.pathfinder_toggle = not self.pathfinder_toggle
+                self.player = self.pathfinderapp.move_target()
 
-            if self.pathfinder_toggle:
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-                    self.pathfinderapp.new_target()
-                    self.state["path"] = self.pathfinderapp.get_path(source=self.state["source"])
+            player_moved = False
+            new_position = self.player
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                new_position = (new_position[0], new_position[1]-1)
+                player_moved = True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                new_position = (new_position[0]+1, new_position[1])
+                player_moved = True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                new_position = (new_position[0], new_position[1]+1)
+                player_moved = True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                new_position = (new_position[0]-1, new_position[1])
+                player_moved = True
 
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.update_source()
+            if player_moved:
+                pos = self.pathfinderapp.move_target(position=new_position)
+                if pos:
+                    self.player = pos
 
         return keymap
 
     def updateHandler(self):
         def update():
-            pass
+            for i in range(len(self.enemies)):
+                next_step = self.pathfinderapp.get_next_step(self.enemies[i])
+                if next_step is not self.player:
+                    self.enemies[i] = next_step
 
         return update
 
@@ -84,18 +90,14 @@ class App:
             pygame.draw.rect(display, tuple(map(lambda x: (x-20)%255,self.wall_color)),
                              [0, (self.size[1])*self.sq_width,self.screen_size[0], 200])
 
-            if self.pathfinder_toggle:
-                if len(self.state["path"]):
-                    color = (0, 0, 255)
-                    points = list(map(lambda c: ((c[0] + 0.5) * self.sq_width, (c[1] + 0.5) * self.sq_width),self.state["path"]))
-                    pygame.draw.lines(display, color, False, points, width=2)
-                if self.pathfinderapp.layout.target:
-                    color = (0, 255, 0)
-                    x, y = self.pathfinderapp.layout.target
-                    pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
-                if self.state["source"]:
-                    color = (255, 0, 0)
-                    x, y = self.state["source"]
+            if self.player:
+                color = (0, 255, 0)
+                x, y = self.player
+                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+            if self.enemies:
+                color = (255, 0, 0)
+                for enemy in self.enemies:
+                    x, y = enemy
                     pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
             for i in range(len(triangles)):
@@ -104,10 +106,6 @@ class App:
                 pygame.draw.polygon(display, self.wall_color, list(tri), width=0)
 
             text = "World size: " + str(self.size)
-            if self.pathfinder_toggle:
-                text += "  Path length: " + str(len(self.state["path"]))
-                text += "  Taget position: " + str(self.pathfinderapp.layout.target)
-                text += "  Source Position: " + str(self.state["source"])
             self._rendertext(display, text, (20,(self.size[1]+2)*self.sq_width))
 
             pygame.display.flip()
@@ -115,12 +113,8 @@ class App:
         return render
 
     def init(self):
-        self.update_source()
-
-        self.renderEngine = RenderEngine(list((1200, 600)), self.updateHandler(),
+        return RenderEngine(list((1200, 600)), self.updateHandler(),
                                          self.renderHandler(), self.keymapHandler(), self.fps_cap)
-
-        return self.renderEngine
 
     def start(self):
         self.renderEngine.start()

@@ -5,19 +5,13 @@ import random
 # Definition type to keep information of layout
 #   tiles
 #   Rooms
-#   target
-#   sources
 
 class Layout:
     def __init__(self, dimensions: tuple, grid: list = None):
-        # 0: empty, -1: obstacle, 1: target, 2: start
         self.width: int = dimensions[0]
         self.height: int = dimensions[1]
 
         self.rooms = list()
-
-        self.target = None
-        self.sources = set()
 
         if grid:
             self.grid = grid
@@ -32,23 +26,28 @@ class Layout:
 
         return nei
 
-    def _random_position(self):
+    def _random_position(self, ignore: list):
         x, y = 0, 0
-        while self.grid[y][x]:
+        found = False
+        while not found:
             x, y = random.randint(0,self.width-1), random.randint(0,self.height-1)
-            if (x,y) == self.target or (x,y) in self.sources:
-                x,y =0,0
+            if (x,y) in ignore or self.grid[y][x]:
+                continue
+
+            found = True
 
         return x,y
 
-    def is_target(self, cell: tuple):
-        return cell == self.target
+    def move_target(self, position: tuple = None, igrore: list = []) -> bool:
+        if position:
+            if 0 <= position[0] < self.width and 0 <= position[1] < self.height:
+                if not self.grid[position[1]][position[0]] and position not in igrore:
+                    return position
+        else:
+            return self._random_position(ignore=igrore)
 
-    def is_source(self, cell: tuple):
-        return self.sources.__contains__(cell)
+        return None
 
-    def new_target(self, target: tuple = None):
-        self.target = target if target else self._random_position()
+    def new_source(self, ignore: list = []):
+        return self._random_position(ignore=ignore)
 
-    def add_source(self, source: tuple = None):
-        self.sources.add(source if source else self._random_position())
