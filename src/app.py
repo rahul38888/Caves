@@ -17,7 +17,7 @@ class App:
         self.size = size
         self.screen_size = (self.size[0]*self.sq_width, self.size[1]*self.sq_width)
         self.iterations = iterations
-        self.fps_cap = 10
+        self.fps_cap = 5
 
         self.wall_color = [95, 67, 42]
         self.wall_border_color = [71, 54, 39]
@@ -35,9 +35,12 @@ class App:
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
 
         self.player = self.pathfinderapp.move_target()
+        self.no_of_enemies = 5
         self.enemies = []
-        self.enemies.append(self.pathfinderapp.new_follower(ignore=[self.player]))
-        self.enemies.append(self.pathfinderapp.new_follower(ignore=[self.player]+self.enemies))
+        for i in range(self.no_of_enemies):
+            enemy = self.pathfinderapp.new_follower(ignore=[self.player]+self.enemies)
+            if enemy:
+                self.enemies.append(enemy)
 
         self.renderEngine = self.init()
 
