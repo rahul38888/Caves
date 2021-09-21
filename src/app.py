@@ -3,7 +3,7 @@ import random
 import pygame
 
 from datahandler.layout import Layout
-from render.renderdatagenerator import coordinate_data
+from render.renderdatagenerator import render_data
 from scripts.pathfindingapp import PathFindingApp
 from scripts.algos.pathfinder import PathFinder
 from scripts.algos.caveprocedural import CaveProcedural
@@ -17,6 +17,14 @@ class App:
         self.screen_size = (self.size[0]*self.sq_width, self.size[1]*self.sq_width)
         self.iterations = iterations
         self.fps_cap = 10
+
+        self.wall_color = [105, 77, 52]
+        self.wall_border_color = [71, 54, 39]
+        self.room_color = [211, 255, 204]
+
+        self.font_type = 'Comic Sans MS'
+        self.font_size = 30
+        self.font_color = (255, 255, 255)
 
         self.state = dict()
 
@@ -65,10 +73,16 @@ class App:
 
         return update
 
+    def _rendertext(self, display, text: str, position: tuple):
+        font = pygame.font.SysFont(self.font_type, self.font_size)
+        textsurface = font.render(text, False, self.font_color)
+        display.blit(textsurface,position)
+
     def renderHandler(self):
         def render(display):
-            triangles = coordinate_data(self.cave.layout.grid, self.sq_width)
-            display.fill((255, 255, 255))
+            triangles, tags = render_data(self.cave.layout.grid, self.sq_width)
+            # display.fill(self.room_color)
+            pygame.draw.rect(display, self.room_color, rect=[0,0,self.screen_size[0], self.screen_size[1]])
 
             if len(self.state["path"]):
                 color = (0, 0, 255)
@@ -89,13 +103,22 @@ class App:
             #         rect = [x*self.sq_width, y*self.sq_width, self.sq_width, self.sq_width]
             #         pygame.draw.rect(display, room.color, rect=rect)
 
-            for tri in triangles:
-                pygame.draw.polygon(display, [0, 0, 0], list(tri), width=0)
+            for i in range(len(triangles)):
+                tri = triangles[i]
+                tag = tags[i]
+                pygame.draw.polygon(display, self.wall_color, list(tri), width=0)
                 # pygame.draw.lines(display, [0, 0, 0], True, list(tri), blend=1)
 
             # for connector in self.connectors:
             #     connector = [((c[0]+0.5) * self.sq_width, (c[1]+0.5) * self.sq_width) for c in connector]
             #     pygame.draw.lines(display, (255, 0, 0), False, connector)
+
+
+            text = "World size: " + str(self.size)
+            text += "  Path length: " + str(len(self.state["path"]))
+            text += "  Taget position: " + str(self.pathfinderapp.layout.target)
+            text += "  Source Position: " + str(self.state["source"])
+            self._rendertext(display, text, (20,(self.size[1]+1)*self.sq_width))
 
             pygame.display.flip()
 

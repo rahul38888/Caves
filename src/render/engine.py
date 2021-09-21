@@ -7,6 +7,7 @@ class RenderEngine:
 
         pygame.init()
         self.display = pygame.display.set_mode(dimensions, pygame.RESIZABLE)
+        self.display = pygame.display.set_mode(pygame.FULLSCREEN)
         pygame.display.set_caption("Caves")
 
         self.keymap = keymap
@@ -24,6 +25,8 @@ class RenderEngine:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                 if self.keymap:
                     self.keymap(event)

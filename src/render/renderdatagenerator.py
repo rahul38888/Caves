@@ -4,28 +4,33 @@ import random
 from datahandler.screencomponents import coordinate_map
 
 
-def coordinate_data(grid: list, sq_width: float) -> list:
+def render_data(grid: list, sq_width: float) -> tuple:
     grid_w = len(grid[0])
     grid_h = len(grid)
     triangles = []
+    tags = []
     for y in range(grid_h + 1):
         for x in range(grid_w + 1):
             activation = (1, 1, 1, 1)
             if 0 < y < grid_h and 0 < x < grid_w:
                 activation = (grid[y - 1][x - 1], grid[y - 1][x], grid[y][x], grid[y][x - 1])
 
-            triangles += _get_triangles((x, y), activation, sq_width=sq_width)
+            tris, tgs = _get_triangles((x, y), activation, sq_width=sq_width)
+            triangles += tris
+            tags += tgs
 
-    return triangles
+    return triangles, tags
 
 
-def _get_triangles(index: tuple, cord_activations: tuple, sq_width: float) -> list:
+def _get_triangles(index: tuple, cord_activations: tuple, sq_width: float) -> tuple:
     triangles = []
+    tags = []
     for tri in coordinate_map.get(cord_activations):
+        tags.append(1 if sum(cord_activations) == 4 else 2)
         triangles.append(tuple(map(lambda c: (sq_width * index[0] + c[0] * sq_width,
                                               sq_width * index[1] + c[1] * sq_width), tri)))
 
-    return triangles
+    return triangles, tags
 
 
 if __name__ == '__main__':
@@ -41,7 +46,7 @@ if __name__ == '__main__':
     sq_w = screen_size / grid_size
     grid = [[random.randint(0, 1) for i in range(grid_size)] for j in range(grid_size)]
     # triangles = coordinate_data(grid, sq_width=sq_w)
-    triangles = _get_triangles((1, 1), (0, 0, 0, 0), sq_width=screen_size/3)
+    triangles, tags = _get_triangles((1, 1), (0, 0, 0, 0), sq_width=screen_size/3)
 
     activations = list(coordinate_map.keys())
     index = 0
@@ -56,7 +61,7 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 index = (index + 1) % len(activations)
                 # triangles = coordinate_data(grid, sq_width=sq_w)
-                triangles = _get_triangles((1, 1), activations[index], sq_width=screen_size/3)
+                triangles, tags = _get_triangles((1, 1), activations[index], sq_width=screen_size/3)
 
             display.fill((255, 255, 255))
             rect = [screen_size/3, screen_size/3, int(screen_size/3), int(screen_size/3)]
