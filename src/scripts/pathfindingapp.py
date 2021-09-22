@@ -16,7 +16,7 @@ class PathFindingApp:
 
         self.pathfinder.recalculate(target[0], target[1], self.layout)
 
-    def move_target(self, position: tuple = None):
+    def move_target(self, position: tuple = None, ignore: list = []):
         target = self.layout.move_target(position=position)
         if target:
             self.recalculate(target)

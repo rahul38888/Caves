@@ -2,6 +2,7 @@ import random
 
 import pygame
 
+from datahandler.entities import Enemy, Player, Direction
 from datahandler.layout import Layout
 from render.renderdatagenerator import render_data
 from scripts.pathfindingapp import PathFindingApp
@@ -34,49 +35,71 @@ class App:
 
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
 
-        self.player = self.pathfinderapp.move_target()
-        self.no_of_enemies = 5
-        self.enemies = []
-        for i in range(self.no_of_enemies):
-            enemy = self.pathfinderapp.new_follower(ignore=[self.player]+self.enemies)
-            if enemy:
-                self.enemies.append(enemy)
+        self.player = Player(self.pathfinderapp.move_target())
+        self.no_of_enemies = 0
+        self.enemies = self.init_enmies(self.no_of_enemies, speed=2)
 
         self.renderEngine = self.init()
+
+    def init_enmies(self, count: int, speed: int):
+        enemies = []
+        for i in range(count):
+            enemy_pos = self.pathfinderapp.new_follower(
+                ignore=[self.player.position]+list(map(lambda p: p.position,enemies)))
+            if enemy_pos:
+                enemies.append(Enemy(enemy_pos, speed=speed))
+        return enemies
 
     def keymapHandler(self):
         def keymap(event):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.player = self.pathfinderapp.move_target()
+                self.player.position = self.pathfinderapp.move_target(
+                    ignore=[self.player.position] + list(map(lambda e: e.position,self.enemies)))
+                self.player.directions = [Direction.NONE, Direction.NONE, Direction.NONE, Direction.NONE]
 
-            player_moved = False
-            new_position = self.player
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                new_position = (new_position[0], new_position[1]-1)
-                player_moved = True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                new_position = (new_position[0]+1, new_position[1])
-                player_moved = True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                new_position = (new_position[0], new_position[1]+1)
-                player_moved = True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                new_position = (new_position[0]-1, new_position[1])
-                player_moved = True
-
-            if player_moved:
-                pos = self.pathfinderapp.move_target(position=new_position)
-                if pos:
-                    self.player = pos
+            if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP):
+                if event.key == pygame.K_UP:
+                    if event.type == pygame.KEYDOWN:
+                        self.player.directions[0] = Direction.UP
+                    elif event.type == pygame.KEYUP:
+                        self.player.directions[0] = Direction.NONE
+                if event.key == pygame.K_RIGHT:
+                    if event.type == pygame.KEYDOWN:
+                        self.player.directions[1] = Direction.RIGHT
+                    elif event.type == pygame.KEYUP:
+                        self.player.directions[1] = Direction.NONE
+                if event.key == pygame.K_DOWN:
+                    if event.type == pygame.KEYDOWN:
+                        self.player.directions[2] = Direction.DOWN
+                    elif event.type == pygame.KEYUP:
+                        self.player.directions[2] = Direction.NONE
+                if event.key == pygame.K_LEFT:
+                    if event.type == pygame.KEYDOWN:
+                        self.player.directions[3] = Direction.LEFT
+                    elif event.type == pygame.KEYUP:
+                        self.player.directions[3] = Direction.NONE
 
         return keymap
 
     def updateHandler(self):
         def update():
+            new_position = self.player.position
+            pos = None
+            for dir in self.player.directions:
+                pos = new_position[0] + dir.value[0], new_position[1] + dir.value[1]
+                pos = self.pathfinderapp.move_target(position=pos)
+                if not pos:
+                    pos = new_position
+                else:
+                    new_position = pos
+
+            if pos:
+                self.player.position = pos
+
             for i in range(len(self.enemies)):
-                next_step = self.pathfinderapp.get_next_step(self.enemies[i])
-                if next_step is not self.player:
-                    self.enemies[i] = next_step
+                next_step = self.pathfinderapp.get_next_step(self.enemies[i].position)
+                if next_step is not self.player.position:
+                    self.enemies[i].position = next_step
 
         return update
 
@@ -95,13 +118,15 @@ class App:
 
             if self.player:
                 color = (0, 255, 0)
-                x, y = self.player
-                pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+                x, y = self.player.position
+                pygame.draw.circle(display, color,
+                                   ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
             if self.enemies:
                 color = (255, 0, 0)
                 for enemy in self.enemies:
-                    x, y = enemy
-                    pygame.draw.circle(display, color, ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
+                    x, y = enemy.position
+                    pygame.draw.circle(display, color,
+                                       ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width), self.sq_width/2, width=0)
 
             for i in range(len(triangles)):
                 tri = triangles[i]
