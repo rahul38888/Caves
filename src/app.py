@@ -35,11 +35,16 @@ class App:
 
         self.pathfinderapp = PathFindingApp(layout=self.cave.layout, pathfinder=PathFinder())
 
-        self.player = Player(self.pathfinderapp.move_target())
-        self.no_of_enemies = 0
+        tile_pos = self.pathfinderapp.move_target()
+        self.player = Player(tile_pos, self._get_coordinates(tile_pos))
+        self.no_of_enemies = 1
         self.enemies = self.init_enmies(self.no_of_enemies, speed=2)
 
         self.renderEngine = self.init()
+
+    def _get_coordinates(self, tile_pos: tuple):
+        x, y = tile_pos
+        return ((x+0.5) * self.sq_width, (y+0.5) * self.sq_width)
 
     def init_enmies(self, count: int, speed: int):
         enemies = []
@@ -53,8 +58,10 @@ class App:
     def keymapHandler(self):
         def keymap(event):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.player.position = self.pathfinderapp.move_target(
+                player_tile = self.pathfinderapp.move_target(
                     ignore=[self.player.position] + list(map(lambda e: e.position,self.enemies)))
+                self.player.position = player_tile
+                self.player.coordinate = self._get_coordinates(player_tile)
                 self.player.directions = [Direction.NONE, Direction.NONE, Direction.NONE, Direction.NONE]
 
             if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP):

@@ -4,9 +4,14 @@ import pygame
 
 
 class Player:
-    def __init__(self, initial_pos: tuple):
+    def __init__(self, initial_pos: tuple, initial_coordinate: tuple):
         self.position = initial_pos
+        self.coordinate = initial_coordinate
         self.directions: list = [Direction.NONE, Direction.NONE, Direction.NONE, Direction.NONE]
+        self.speed = 1
+
+    def search_coordinate(self, coordinate: tuple):
+        pass
 
 
 class Enemy:
