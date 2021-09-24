@@ -9,13 +9,13 @@
 ![welcome.png](https://github.com/rahul38888/game-n-algo/blob/main/media/Cave.png?raw=true)
 
 New cave is generated every time the app is initialized.
+The Red keep following the Green around using Dijkstra's Algorithm (for Green) until it caches it
 
 ## Controls
 Key | Function
 ------------ | -------------
-S | New random position for Red (source)
 T | New random position for Green (target)
-SPACE | Toggle pathfinding render
+Arrow Keys | To move Green around the caves
 Esc | Exist
 
 ### Enjoy!
