@@ -8,7 +8,7 @@ def draw():
 
     clock = pygame.time.Clock()
 
-    while True:
+    while running:
         running = True
 
         while running:

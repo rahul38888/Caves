@@ -12,10 +12,10 @@ New cave is generated every time the app is initialized.
 The Red keep following the Green around using Dijkstra's Algorithm (for Green) until it caches it
 
 ## Controls
-Key | Function
------------- | -------------
-T | New random position for Green (target)
-Arrow Keys | To move Green around the caves
-Esc | Exist
+| Key        | Function                               |
+|------------|----------------------------------------|
+| T          | New random position for Green (target) |
+| Arrow Keys | To move Green around the caves         |
+| Esc        | Exist                                  |
 
 ### Enjoy!
